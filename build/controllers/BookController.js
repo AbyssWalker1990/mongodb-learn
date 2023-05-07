@@ -29,6 +29,7 @@ class BookController {
         this.initRoutes = () => {
             this.router.get(`${this.path}/`, this.getAllBooks);
             this.router.get(`${this.path}/:bookId`, this.getBookById);
+            this.router.post(`${this.path}/`, this.postBook);
         };
         this.getAllBooks = (req, res) => __awaiter(this, void 0, void 0, function* () {
             var e_1, _a;
@@ -54,14 +55,29 @@ class BookController {
             }
             res.status(200).json({ message: bookList });
         });
-        this.getBookById = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const bookId = new mongodb_1.ObjectId(req.params.bookId);
+        this.getBookById = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            if (mongodb_1.ObjectId.isValid(req.params.bookId)) {
+                const bookId = new mongodb_1.ObjectId(req.params.bookId);
+                try {
+                    const data = yield db_1.default.collection('books').findOne({ _id: bookId });
+                    res.status(200).json({ book: data });
+                }
+                catch (error) {
+                    res.status(500).json({ err: 'Cant find' });
+                }
+            }
+            else {
+                res.status(500).json({ err: "Invalid Id" });
+            }
+        });
+        this.postBook = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const book = req.body;
             try {
-                const data = yield db_1.default.collection('books').findOne({ _id: bookId });
-                res.status(200).json({ book: data });
+                const result = yield db_1.default.collection('books').insertOne(book);
+                res.status(201).json({ result });
             }
             catch (error) {
-                res.status(500).json({ err: 'Cant find' });
+                res.status(500).json({ err: "Invalid body" });
             }
         });
         this.initRoutes();
