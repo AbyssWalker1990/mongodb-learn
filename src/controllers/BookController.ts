@@ -17,6 +17,7 @@ class BookController implements Controller {
     this.router.get(`${this.path}/`, this.getAllBooks)
     this.router.get(`${this.path}/:bookId`, this.getBookById)
     this.router.post(`${this.path}/`, this.postBook)
+    this.router.delete(`${this.path}/:bookId`, this.deleteBookById)
   }
 
   private readonly getAllBooks = async (req: Request, res: Response): Promise<void> => {
@@ -53,6 +54,20 @@ class BookController implements Controller {
       res.status(201).json({result})
     } catch (error) {
       res.status(500).json({err: "Invalid body"})
+    }
+  }
+
+  private readonly deleteBookById = async (req: Request, res: Response): Promise<void> => {
+    if (ObjectId.isValid(req.params.bookId)) {
+      const bookId = new ObjectId(req.params.bookId)
+      try {
+        const data = await db.collection('books').deleteOne({ _id: bookId })
+        res.status(200).json({data})
+      } catch (error) {
+        res.status(500).json({ err: 'Cant delete' })
+      }
+    } else {
+      res.status(500).json({err: "Invalid Id"})
     }
   }
 }
