@@ -68,7 +68,7 @@ class BookController {
                 }
             }
             else {
-                res.status(500).json({ err: "Invalid Id" });
+                res.status(500).json({ err: 'Invalid Id' });
             }
         });
         this.postBook = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -78,7 +78,7 @@ class BookController {
                 res.status(201).json({ result });
             }
             catch (error) {
-                res.status(500).json({ err: "Invalid body" });
+                res.status(500).json({ err: 'Invalid body' });
             }
         });
         this.deleteBookById = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -93,7 +93,7 @@ class BookController {
                 }
             }
             else {
-                res.status(500).json({ err: "Invalid Id" });
+                res.status(500).json({ err: 'Invalid Id' });
             }
         });
         this.initRoutes();

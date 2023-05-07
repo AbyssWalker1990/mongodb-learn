@@ -43,7 +43,7 @@ class BookController implements Controller {
         res.status(500).json({ err: 'Cant find' })
       }
     } else {
-      res.status(500).json({err: "Invalid Id"})
+      res.status(500).json({ err: 'Invalid Id' })
     }
   }
 
@@ -51,9 +51,9 @@ class BookController implements Controller {
     const book: Book = req.body
     try {
       const result = await db.collection('books').insertOne(book)
-      res.status(201).json({result})
+      res.status(201).json({ result })
     } catch (error) {
-      res.status(500).json({err: "Invalid body"})
+      res.status(500).json({ err: 'Invalid body' })
     }
   }
 
@@ -62,12 +62,12 @@ class BookController implements Controller {
       const bookId = new ObjectId(req.params.bookId)
       try {
         const data = await db.collection('books').deleteOne({ _id: bookId })
-        res.status(200).json({data})
+        res.status(200).json({ data })
       } catch (error) {
         res.status(500).json({ err: 'Cant delete' })
       }
     } else {
-      res.status(500).json({err: "Invalid Id"})
+      res.status(500).json({ err: 'Invalid Id' })
     }
   }
 }

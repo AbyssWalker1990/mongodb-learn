@@ -1,16 +1,14 @@
 import type { ObjectId } from 'mongodb'
 
-type Book = {
+interface Book {
   _id?: ObjectId
   title: string
   author: string
   pages: number
   rating: number
   genres: string[]
-  reviews: {
-      name: string
-      body: string
-    }[]
+  reviews: Array<{
+    name: string
+    body: string
+  }>
 }
-
-
