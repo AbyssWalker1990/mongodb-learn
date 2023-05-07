@@ -1,28 +1,43 @@
-import express, { Request, Response }from 'express'
-import Controller from '../interfaces/controller.interface'
-import Database from '../db'
+import type { Request, Response } from 'express'
+import express from 'express'
+import { ObjectId } from 'mongodb'
+import type Controller from '../interfaces/controller.interface'
+import db from '../db'
 
-class BookController implements Controller{
+class BookController implements Controller {
   path = '/books'
   router = express.Router()
 
   constructor () {
     this.initRoutes()
   }
-  
-  initRoutes = (): void => {
+
+  private readonly initRoutes = (): void => {
     this.router.get(`${this.path}/`, this.getAllBooks)
+    this.router.get(`${this.path}/:bookId`, this.getBookById)
   }
 
-  getAllBooks = async (req: Request, res: Response): Promise<void> => {
-    const connection = new Database()
-    const db = connection.connectDB()
-    const data = db.collection('books').find()
+  private readonly getAllBooks = async (req: Request, res: Response): Promise<void> => {
     const bookList = []
-    for await (const book of data) {
-      bookList.push(book)
+    try {
+      const data = db.collection('books').find()
+      for await (const book of data) {
+        bookList.push(book)
+      }
+    } catch (error) {
+      res.status(500).json({ error })
     }
-    res.json({message: bookList})
+    res.status(200).json({ message: bookList })
+  }
+
+  private readonly getBookById = async (req: Request, res: Response): Promise<void> => {
+    const bookId = new ObjectId(req.params.bookId)
+    try {
+      const data = await db.collection('books').findOne({ _id: bookId })
+      res.status(200).json({ book: data })
+    } catch (error) {
+      res.status(500).json({ err: 'Cant find' })
+    }
   }
 }
 
