@@ -1,24 +1,26 @@
-const express = require('express')
-const Database = require('./db')
-const BookController = require('./controllers/BookController')
+import express from 'express'
+import Database from './db'
+import BookController from './controllers/BookController'
+import Controller from './interfaces/controller.interface'
 
 const dbConnection = new Database()
 const database = dbConnection.getDB()
 
 class App {
-  constructor (PORT, controllers) {
+  private app: express.Application
+  constructor (public PORT: number, controllers: Controller[]) {
     this.PORT = PORT
     this.app = express()
     this.initControllers(controllers)
   }
 
-  initControllers = (controllers) => {
+  private initControllers = (controllers: Controller[]): void => {
     controllers.forEach((controller) => {
       this.app.use('/', controller.router)
     })
   }
 
-  listen = () => {
+  public listen = () => {
     this.app.listen(this.PORT, () => {
       console.log(`App listening on PORT: ${this.PORT}`)
     })
