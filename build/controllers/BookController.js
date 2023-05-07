@@ -35,9 +35,12 @@ class BookController {
         };
         this.getAllBooks = (req, res) => __awaiter(this, void 0, void 0, function* () {
             var e_1, _a;
+            const page = Number(req.query.p) || 0;
+            console.log(page);
+            const booksPerPage = 3;
             const bookList = [];
             try {
-                const data = db_1.default.collection('books').find();
+                const data = db_1.default.collection('books').find().skip(page * booksPerPage).limit(booksPerPage);
                 try {
                     for (var data_1 = __asyncValues(data), data_1_1; data_1_1 = yield data_1.next(), !data_1_1.done;) {
                         const book = data_1_1.value;

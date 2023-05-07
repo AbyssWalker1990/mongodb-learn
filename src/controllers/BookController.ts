@@ -22,9 +22,12 @@ class BookController implements Controller {
   }
 
   private readonly getAllBooks = async (req: Request, res: Response): Promise<void> => {
+    const page = Number(req.query.p) || 0
+    console.log(page)
+    const booksPerPage = 3
     const bookList: Book[] = []
     try {
-      const data = db.collection('books').find()
+      const data = db.collection('books').find().skip(page * booksPerPage).limit(booksPerPage)
       for await (const book of data) {
         bookList.push(book as Book)
       }
