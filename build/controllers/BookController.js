@@ -31,6 +31,7 @@ class BookController {
             this.router.get(`${this.path}/:bookId`, this.getBookById);
             this.router.post(`${this.path}/`, this.postBook);
             this.router.delete(`${this.path}/:bookId`, this.deleteBookById);
+            this.router.patch(`${this.path}/:bookId`, this.updateBookById);
         };
         this.getAllBooks = (req, res) => __awaiter(this, void 0, void 0, function* () {
             var e_1, _a;
@@ -90,6 +91,22 @@ class BookController {
                 }
                 catch (error) {
                     res.status(500).json({ err: 'Cant delete' });
+                }
+            }
+            else {
+                res.status(500).json({ err: 'Invalid Id' });
+            }
+        });
+        this.updateBookById = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (mongodb_1.ObjectId.isValid(req.params.bookId)) {
+                const bookId = new mongodb_1.ObjectId(req.params.bookId);
+                const updates = req.body;
+                try {
+                    const data = yield db_1.default.collection('books').updateOne({ _id: bookId }, { $set: updates });
+                    res.status(200).json({ data });
+                }
+                catch (error) {
+                    res.status(500).json({ err: 'Cant update' });
                 }
             }
             else {

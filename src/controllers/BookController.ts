@@ -18,6 +18,7 @@ class BookController implements Controller {
     this.router.get(`${this.path}/:bookId`, this.getBookById)
     this.router.post(`${this.path}/`, this.postBook)
     this.router.delete(`${this.path}/:bookId`, this.deleteBookById)
+    this.router.patch(`${this.path}/:bookId`, this.updateBookById)
   }
 
   private readonly getAllBooks = async (req: Request, res: Response): Promise<void> => {
@@ -65,6 +66,21 @@ class BookController implements Controller {
         res.status(200).json({ data })
       } catch (error) {
         res.status(500).json({ err: 'Cant delete' })
+      }
+    } else {
+      res.status(500).json({ err: 'Invalid Id' })
+    }
+  }
+
+  private readonly updateBookById = async (req: Request, res: Response): Promise<void> => {
+    if (ObjectId.isValid(req.params.bookId)) {
+      const bookId = new ObjectId(req.params.bookId)
+      const updates: Record<string, unknown> = req.body
+      try {
+        const data = await db.collection('books').updateOne({ _id: bookId }, { $set: updates })
+        res.status(200).json({ data })
+      } catch (error) {
+        res.status(500).json({ err: 'Cant update' })
       }
     } else {
       res.status(500).json({ err: 'Invalid Id' })
