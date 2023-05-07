@@ -1,41 +1,51 @@
 const express = require('express')
-const { MongoClient } = require('mongodb')
+const Database = require('./db')
+const BookController = require('./controllers/BookController')
 
-const client = new MongoClient('mongodb://127.0.0.1:27017/bookstore')
-const database = client.db()
+const dbConnection = new Database()
+const database = dbConnection.getDB()
 
-async function test () {
-  try {
-    console.log('Started')
-    const books = database.collection('books')
-    const book = await books.findOne({title: "1984"})
-    console.log(book)
-  } catch (error) {
-    console.log(error)
-  } finally {
-    console.log('finally')
-    await client.close()
+class App {
+  constructor (PORT, controllers) {
+    this.PORT = PORT
+    this.app = express()
+    this.initControllers(controllers)
+  }
+
+  initControllers = (controllers) => {
+    controllers.forEach((controller) => {
+      this.app.use('/', controller.router)
+    })
+  }
+
+  listen = () => {
+    this.app.listen(this.PORT, () => {
+      console.log(`App listening on PORT: ${this.PORT}`)
+    })
   }
 }
 
-test()
-
-const PORT = 3000
-const app = express()
 
 
+const app = new App(3000, [
+  new BookController()
+])
+
+app.listen()
 
 
-app.listen(PORT, () => {
-  console.log(`App listening on PORT: ${PORT}`)
-})
-// let books = []
-// app.get('/books', (req, res) => {
-//   db.collection('books').find().sort({author: 1}).forEach(book => books.push(book))
-//     .then(() => {
-//       res.status(200).json(books)
-//     })
-//     .catch((err) => {
-//       res.status(500).json({error: err.toString()})
-//     })
-// })
+// async function test () {
+//   try {
+//     console.log('Started')
+//     const books = database.collection('books')
+//     const book = await books.findOne({title: "1984"})
+//     console.log(book)
+//   } catch (error) {
+//     console.log(error)
+//   } finally {
+//     console.log('finally')
+//     await client.close()
+//   }
+// }
+
+// test()
